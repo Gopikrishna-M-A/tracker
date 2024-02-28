@@ -8,8 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Tabs,
   TabsContent,
@@ -19,7 +17,7 @@ import {
 import axios from "axios"
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
-import { useSession, signIn, signOut } from "next-auth/react"
+import { useSession } from "next-auth/react"
 import { useState } from "react"
 
 
@@ -29,17 +27,16 @@ export default function TabsDemo() {
   
 
   const handleSave = (bool) => {
-    console.log(bool);
     axios.patch(`${baseURL}/api/user/${user._id}`,{isDriver:bool}).then((res)=>{
       console.log("res",res);
     })
   }
 
-
+// shadcn UI
 
   return (
     <div className="mt-10 flex justify-center items-center">
-      <Tabs defaultValue="account" className="w-[400px] ">
+      <Tabs defaultValue="patient" className="w-[400px] ">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="driver">Driver</TabsTrigger>
         <TabsTrigger value="patient">Patient</TabsTrigger>

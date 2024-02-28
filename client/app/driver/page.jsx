@@ -1,21 +1,17 @@
 'use client'
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { useSession, signIn, signOut } from "next-auth/react"
-import { Button } from "@/components/ui/button"
+import { useSession } from "next-auth/react"
 
 const page = () => {
     const { data: session } = useSession()
     const [user, setUser] = useState(session?.user)
     const [driver, setDriver] = useState()
     const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
-    const [latitude, setLatitude] = useState(null);
-    const [longitude, setLongitude] = useState(null);
 
     useEffect(() => {
       axios.get(`${baseURL}/api/user/${user?._id}`).then((res)=>{
         setUser(res.data)
-        console.log("res",res.data);
       })
     }, [])
 
@@ -25,8 +21,6 @@ const page = () => {
           if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
               (position) => {
-                setLatitude(position.coords.latitude);
-                setLongitude(position.coords.longitude);
                 if (user) {
                     axios.patch(`${baseURL}/api/driver/${user._id}`, { latitude: position.coords.latitude, longitude: position.coords.longitude })
                       .then((res) => {

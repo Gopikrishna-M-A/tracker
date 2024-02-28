@@ -3,6 +3,7 @@ import User from '../models/user.js'
 
 export const addUser = async (req, res) => {
   const { name, email, image, oAuthId } = req.body;
+  
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {

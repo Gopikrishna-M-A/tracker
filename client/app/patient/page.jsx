@@ -1,21 +1,18 @@
 'use client'
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { useSession, signIn, signOut } from "next-auth/react"
+import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 
 const page = () => {
     const { data: session } = useSession()
     const [user, setUser] = useState(session?.user)
     const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
-    const [latitude, setLatitude] = useState(null);
-    const [longitude, setLongitude] = useState(null);
     const [closestDriver, setClosestDriver] = useState(null);
 
     useEffect(() => {
       axios.get(`${baseURL}/api/user/${user?._id}`).then((res)=>{
         setUser(res.data)
-        console.log("res",res.data);
       })
     }, [])
 
@@ -24,8 +21,6 @@ const page = () => {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
             (position) => {
-              setLatitude(position.coords.latitude);
-              setLongitude(position.coords.longitude);
               if (user) {
                   axios.patch(`${baseURL}/api/patient/${user._id}`, { latitude: position.coords.latitude, longitude: position.coords.longitude })
                     .then((res) => {
@@ -50,11 +45,6 @@ const page = () => {
       // Clean up the interval on component unmount
       return () => {
         clearInterval(intervalId);
-        axios.patch(`${baseURL}/api/driver/${closestDriver?.userId?._id}`, {
-            isOnline: false,
-            patientLatitude: 0,
-            patientLongitude: 0,
-          })
       };
     }, []); // Include user in the dependency array to update when user changes
     

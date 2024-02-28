@@ -6,6 +6,7 @@ export const findDriver = async (req, res) => {
   try {
     // Get patient's current latitude and longitude
     const patient = await Patient.findOne({ userId: req.params.patientId });
+    
     if (!patient) {
       return res.status(404).json({ message: 'Patient not found' });
     }

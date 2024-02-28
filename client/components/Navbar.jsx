@@ -24,14 +24,6 @@ const Navbar = () => {
   const items = [
     {
       key: '1',
-      label: (
-        <Link href="/profile" rel="noopener noreferrer" >
-          Profile
-        </Link>
-      ),
-    },
-    {
-      key: '3',
       danger: true,
       label: (
         <div onClick={signOut} rel="noopener noreferrer" >

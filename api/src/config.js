@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 dotenv.config({ path: '../.env' });
 
-
 const Pass_Key = process.env.PASS_KEY;
 const user_id = process.env.USER_ID;
 const db_Name = process.env.DB_NAME;
@@ -15,7 +14,5 @@ mongoose.connect(DB_URI, {
 })
   .then(() => console.log('Connected to MongoDB'))
   .catch((error) => console.error('MongoDB connection error:', error));
-
-
 
  export default mongoose;
