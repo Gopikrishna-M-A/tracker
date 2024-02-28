@@ -72,7 +72,7 @@ const page = () => {
     }
 
     const handleCancel = () => {
-      axios.patch(`${baseURL}/api/driver/${closestDriver?._id}`, { isOnline: false, patientLatitude: 0, patientLongitude: 0 }).then((res)=>{
+      axios.patch(`${baseURL}/api/driver/${closestDriver?.userId}`, { isOnline: false, patientLatitude: 0, patientLongitude: 0 }).then((res)=>{
         console.log("res",res.data);
         setClosestDriver(null)
       })
