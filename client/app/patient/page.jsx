@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 const page = () => {
     const { data: session } = useSession()
     const [user, setUser] = useState(session?.user)
-    const [driver, setDriver] = useState()
     const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
@@ -28,25 +27,13 @@ const page = () => {
               setLatitude(position.coords.latitude);
               setLongitude(position.coords.longitude);
               if (user) {
-                if (user.isDriver) {
-                  axios.patch(`${baseURL}/api/driver/${user._id}`, { latitude: position.coords.latitude, longitude: position.coords.longitude })
-                    .then((res) => {
-                      console.log("Driver location updated:", res.data);
-                      setDriver(res.data)
-                    })
-                    .catch((error) => {
-                      console.error("Error updating driver location:", error.message);
-                    });
-                } 
-                if (!user.isDriver) {
                   axios.patch(`${baseURL}/api/patient/${user._id}`, { latitude: position.coords.latitude, longitude: position.coords.longitude })
                     .then((res) => {
-                      console.log("Patient location updated:", res.data);
+                      console.log("patient location updated:", res.data);
                     })
                     .catch((error) => {
                       console.error("Error updating patient location:", error.message);
                     });
-                }
               }
             },
             (error) => {
@@ -55,13 +42,20 @@ const page = () => {
           );
         }
       };
-    
+
       // Update location initially and then every 5 seconds
       updateLocation();
       const intervalId = setInterval(updateLocation, 5000);
     
       // Clean up the interval on component unmount
-      return () => clearInterval(intervalId);
+      return () => {
+        clearInterval(intervalId);
+        axios.patch(`${baseURL}/api/driver/${closestDriver?.userId?._id}`, {
+            isOnline: false,
+            patientLatitude: 0,
+            patientLongitude: 0,
+          })
+      };
     }, []); // Include user in the dependency array to update when user changes
     
 
@@ -74,7 +68,6 @@ const page = () => {
     }
 
     const handleCancel = () => {
-      console.log("closestDriver",closestDriver);
       axios.patch(`${baseURL}/api/driver/${closestDriver?.userId?._id}`, { isOnline: false, patientLatitude: 0, patientLongitude: 0 }).then((res)=>{
         console.log("res",res.data);
         setClosestDriver(null)
@@ -84,20 +77,11 @@ const page = () => {
   return (
     <div className='mt-10 flex justify-center items-center flex-col gap-5'>
 
-        {user?.isDriver ? <div>Driver</div> : <div>Patient</div>}
+         <div>Patient</div>
 
-        {user?.isDriver && driver?.isOnline && (
-          <div>
-              <h1>Driver</h1>
-              <h1>{driver.isOnline}</h1>
-              <a href={`https://www.google.com/maps/dir/?api=1&origin=${closestDriver.latitude},${closestDriver.longitude}&destination=${closestDriver.patientLatitude},${closestDriver.patientLongitude}`}>map</a>
-          </div>
-          
-        )}
-
-        {!user?.isDriver  && <Button onClick={handleAlert}>Alert</Button>}
-        {!user?.isDriver  && <Button onClick={handleCancel}>Cancel</Button>}
-        {closestDriver  && <div >{closestDriver.userId.name}</div>}
+         <Button onClick={handleAlert}>Alert</Button>
+         <Button onClick={handleCancel}>Cancel</Button>
+         <div >{closestDriver?.userId?.name}</div>
     </div>
   )
 }
