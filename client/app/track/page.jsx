@@ -83,7 +83,7 @@ const page = () => {
 
         {user?.isDriver ? <div>Driver</div> : <div>Patient</div>}
 
-        {user?.isDriver && closestDriver?.isOnline && (
+        {closestDriver?.isOnline && (
           <div>
               <h1>Driver</h1>
               <a href={`https://www.google.com/maps/dir/?api=1&origin=${closestDriver.latitude},${closestDriver.longitude}&destination=${closestDriver.patientLatitude},${closestDriver.patientLongitude}`}>map</a>
