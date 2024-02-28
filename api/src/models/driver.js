@@ -15,6 +15,18 @@ const driverSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    patientLatitude: {
+      type: Number,
+      default: 0,
+    },
+    patientLongitude: {
+      type: Number,
+      default: 0,
+    },
+    isOnline: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

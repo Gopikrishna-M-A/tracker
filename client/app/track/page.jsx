@@ -71,11 +71,28 @@ const page = () => {
       })
     }
 
+    const handleCancel = () => {
+      axios.patch(`${baseURL}/api/driver/${closestDriver?._id}`, { isOnline: false, patientLatitude: 0, patientLongitude: 0 }).then((res)=>{
+        console.log("res",res.data);
+        setClosestDriver(null)
+      })
+    }
+
   return (
     <div className='mt-10 flex justify-center items-center flex-col gap-5'>
-        {user?.isDriver ? "Driver" : "Patient"}
+
+        {user?.isDriver ? <div>Driver</div> : <div>Patient</div>}
+
+        {user?.isDriver && closestDriver?.isOnline && (
+          <div>
+              <h1>Driver</h1>
+              <a href={`https://www.google.com/maps/dir/?api=1&origin=${closestDriver.latitude},${closestDriver.longitude}&destination=${closestDriver.patientLatitude},${closestDriver.patientLongitude}`}>map</a>
+          </div>
+          
+        )}
 
         {!user?.isDriver  && <Button onClick={handleAlert}>Alert</Button>}
+        {!user?.isDriver  && <Button onClick={handleCancel}>Cancel</Button>}
         {closestDriver  && <div >{closestDriver.userId.name}</div>}
     </div>
   )

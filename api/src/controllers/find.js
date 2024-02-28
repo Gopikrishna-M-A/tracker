@@ -14,7 +14,7 @@ export const findDriver = async (req, res) => {
     const patientLongitude = patient.longitude;
 
     // Fetch all drivers and their latitudes and longitudes
-    const drivers = await Driver.find({}).populate('userId');
+    const drivers = await Driver.find({ isOnline: false }).populate('userId');
 
     // Find the closest driver
     let closestDriver = null;
@@ -36,6 +36,17 @@ export const findDriver = async (req, res) => {
         closestDistance = distance;
       }
     });
+
+    if (closestDriver) {
+      await Driver.findByIdAndUpdate(closestDriver._id, { isOnline: true });
+
+      // Set driver's patientLatitude and patientLongitude to the patient's coordinates
+      closestDriver.patientLatitude = patient.latitude;
+      closestDriver.patientLongitude = patient.longitude;
+
+      // Save the changes to the driver document
+      await closestDriver.save();
+    }
 
     res.status(200).json({ closestDriver, closestDistance });
   } catch (error) {
