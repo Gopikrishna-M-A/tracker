@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import { getServerSession } from "next-auth/next";
 import { options } from "../app/api/auth/[...nextauth]/options";
 import Session from "../components/Session";
+import { Toaster } from "@/components/ui/sonner"
 
 export const metadata = {
   title: "Create Next App",
@@ -17,7 +18,10 @@ export default async function RootLayout({ children }) {
       <body>
         <Session session={session}>
               <Navbar session={session} />
+              <Toaster />
+              <div className="px-5">
               {children}
+              </div>
         </Session>
       </body>
     </html>

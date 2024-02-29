@@ -14,60 +14,59 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
+import { toast } from "sonner";
 import axios from "axios"
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
 import { useSession } from "next-auth/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 
 export default function TabsDemo() {
   const { data: session } = useSession()
   const [user, setUser] = useState(session?.user)
-  
+  const [loading,setLoading] = useState(false)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${baseURL}/api/user/${user?._id}`);
+        setUser(response.data);
+      } catch (error) {
+        console.error('Error fetching user data:', error.message);
+        // Handle the error as needed, e.g., set an error state
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleSave = (bool) => {
     axios.patch(`${baseURL}/api/user/${user._id}`,{isDriver:bool}).then((res)=>{
-      console.log("res",res);
-    })
+      toast.success(`${user?.name} updated role to ${res.data.result.isDriver ? 'Driver' : 'Patient'}`, {
+        position: "top-center",
+      });
+      setUser(res.data.result)
+      console.log("user",res.data.result);
+    }) 
   }
 
-// shadcn UI
 
   return (
-    <div className="mt-10 flex justify-center items-center">
-      <Tabs defaultValue="patient" className="w-[400px] ">
+    <div className="mt-10 flex justify-center items-center flex-col gap-5">
+      {!loading ? <Tabs defaultValue={user.isDriver ? "driver" : "patient"} className="w-[400px] ">
       <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="driver">Driver</TabsTrigger>
-        <TabsTrigger value="patient">Patient</TabsTrigger>
+        <TabsTrigger onClick={()=>handleSave(true)} value="driver">Driver</TabsTrigger>
+        <TabsTrigger onClick={()=>handleSave(false)} value="patient">Patient</TabsTrigger>
       </TabsList>
-      <TabsContent value="driver">
-        <Card>
-          <CardHeader>
-            <CardTitle>Driver</CardTitle>
-            <CardDescription>
-              driver
-            </CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Button onClick={()=>handleSave(true)}>Save</Button>
-          </CardFooter>
-        </Card>
-      </TabsContent>
-      <TabsContent value="patient">
-        <Card>
-          <CardHeader>
-            <CardTitle>patient</CardTitle>
-            <CardDescription>
-              patient
-            </CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Button onClick={()=>handleSave(false)}>Save</Button>
-          </CardFooter>
-        </Card>
-      </TabsContent>
-    </Tabs>
+    </Tabs> : 
+    <div className=" animate-pulse">Loading</div>}
+    
+    <a href={`\ ${user.isDriver ? "driver" : "patient"}`}><Button>Start Tracking</Button></a>
+    
     </div>
     
   )
