@@ -51,7 +51,7 @@ export const updateDriver = async (req, res) => {
       const updateFields = req.body;
 
       // Try to find the existing patient by userId
-      const existingDriver = await Driver.findOne({ userId: req.params.id });
+      const existingDriver = await Driver.findOne({ userId: req.params.id })
 
       if (existingDriver) {
           // If patient exists, update the existing patient
@@ -59,7 +59,10 @@ export const updateDriver = async (req, res) => {
               { userId: req.params.id },
               updateFields,
               { new: true }
-          );
+          ).populate({
+            path: 'patientId',
+            populate: { path: 'userId' } // Populate the userId field inside the patientId field
+          }).populate('userId')
 
           res.status(200).json(updatedDriver);
       } else {
@@ -67,7 +70,7 @@ export const updateDriver = async (req, res) => {
           const newDriver = await Driver.create({
               userId: req.params.id,
               ...updateFields,
-          });
+          })
 
           res.status(201).json(newDriver); // Status 201 indicates resource creation
       }

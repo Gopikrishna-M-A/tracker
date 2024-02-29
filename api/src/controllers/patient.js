@@ -59,7 +59,7 @@ export const updatePatient = async (req, res) => {
               { userId: req.params.id },
               updateFields,
               { new: true }
-          );
+          ).populate("userId")
 
           res.status(200).json(updatedPatient);
       } else {

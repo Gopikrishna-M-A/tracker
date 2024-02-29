@@ -1,4 +1,5 @@
-
+import Patient from '../models/patient.js';
+import Driver from '../models/driver.js';
 import User from '../models/user.js'
 
 export const addUser = async (req, res) => {
@@ -68,10 +69,17 @@ export const updateUser = async (req, res) => {
   const { id } = req.params;
   const updatedUser = req.body;
 
-  console.log("updatedUser",updatedUser);
-  console.log("id",id);
   try {
     const result = await User.findByIdAndUpdate(id, updatedUser, { new: true });
+    if (!result) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    if (!result.isDriver) {
+      await Driver.deleteMany({ userId: id });
+    } else {
+      // If isDriver is true, delete patient records with the user's ID
+      await Patient.deleteMany({ userId: id });
+    }
     res.status(200).json({ result });
   } catch (error) {
     res.status(500).json({ message: error.message });
