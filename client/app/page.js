@@ -56,7 +56,10 @@ export default function TabsDemo() {
 
 
   return (
+  
     <div className="mt-10 flex justify-center items-center flex-col gap-5">
+
+      {user ?  <div>
       {!loading ? <Tabs defaultValue={user.isDriver ? "driver" : "patient"} className="w-[400px] ">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger onClick={()=>handleSave(true)} value="driver">Driver</TabsTrigger>
@@ -64,8 +67,9 @@ export default function TabsDemo() {
       </TabsList>
     </Tabs> : 
     <div className=" animate-pulse">Loading</div>}
-    
-    <a href={`\ ${user.isDriver ? "driver" : "patient"}`}><Button>Start Tracking</Button></a>
+      </div> : <div className=" animate-bounce select-none">Sign in to continue</div>}
+     
+     {user && <a href={`\ ${user.isDriver ? "driver" : "patient"}`}><Button>Start Tracking</Button></a>  }
     
     </div>
     
