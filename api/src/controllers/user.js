@@ -66,9 +66,11 @@ export const deleteUser = async (req, res) => {
 
 // Controller to update a user by ID
 export const updateUser = async (req, res) => {
+
   const { id } = req.params;
   const updatedUser = req.body;
 
+  console.log("updatedUser",updatedUser);
   try {
     const result = await User.findByIdAndUpdate(id, updatedUser, { new: true });
     if (!result) {

@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isHospital: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

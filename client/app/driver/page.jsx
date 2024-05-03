@@ -21,10 +21,21 @@ const page = () => {
   const [refreshTimer, setRefreshTimer] = useState(5);
   const [online, setOnline] = useState(false);
 
+  const [hospitals, setHospitals] = useState([]);
+
+  const fetchHospitals = () => {
+    console.log("inside fetch");
+    axios.get(`${baseURL}/api/user`).then((res) => {
+      const hospitals = res.data.filter((user) => user.isHospital === true);
+      console.log("hospitals", hospitals);
+      setHospitals(hospitals);
+    });
+  };
   useEffect(() => {
     axios.get(`${baseURL}/api/user/${user?._id}`).then((res) => {
       setUser(res.data);
     });
+    fetchHospitals();
   }, []);
 
   useEffect(() => {
@@ -70,7 +81,7 @@ const page = () => {
       clearInterval(intervalId);
       clearInterval(interval2Id);
     };
-  }, []); // Include user in the dependency array to update when user changes
+  }, []); 
 
   useEffect(() => {
     if (online) {
@@ -85,10 +96,31 @@ const page = () => {
       .patch(`${baseURL}/api/driver/${driver?.userId?._id}`, {
         isOnline: false,
         patientId: null,
+        hospital: null,
       })
       .then((res) => {
         console.log("res", res.data);
         setOnline(false);
+      });
+  };
+
+  const setHospital = (id) => {
+    axios
+      .patch(`${baseURL}/api/driver/${driver?.userId?._id}`, {
+        hospital:id,
+      })
+      .then((res) => {
+        console.log("res", res.data);
+      });
+  };
+
+  const removeHospital = () => {
+    axios
+      .patch(`${baseURL}/api/driver/${driver?.userId?._id}`, {
+        hospital:null,
+      })
+      .then((res) => {
+        console.log("res", res.data);
       });
   };
 
@@ -135,6 +167,21 @@ const page = () => {
             </Card>
           </div>
         )}
+      </div>
+
+      <div className="flex flex-col gap-5">
+        <div className="text-lg font-bold"> Hospitals ({driver?.hospital?.name})</div>
+        <div>
+          {hospitals.map((hospital) => (
+            <div className="flex gap-3">
+              <div className="bg-gray-600 text-white py-1 px-3 rounded">
+                {hospital.name}
+              </div>
+              <Button onClick={() => setHospital(hospital._id)}>Set</Button>
+              <Button onClick={removeHospital}>Remove</Button>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

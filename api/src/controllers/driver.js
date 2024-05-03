@@ -62,7 +62,7 @@ export const updateDriver = async (req, res) => {
           ).populate({
             path: 'patientId',
             populate: { path: 'userId' } // Populate the userId field inside the patientId field
-          }).populate('userId')
+          }).populate('userId').populate('hospital')
 
           res.status(200).json(updatedDriver);
       } else {
@@ -78,3 +78,21 @@ export const updateDriver = async (req, res) => {
       res.status(500).json({ message: error.message });
   }
 };
+
+
+export const getDriverforHospital = async (req,res) => {
+  try {
+
+    const hospital = req.params.hospitalId
+
+    const drivers = await Driver.findOne({ hospital }).populate({
+      path: 'patientId',
+      populate: { path: 'userId' } // Populate the userId field inside the patientId field
+    }).populate('userId').populate('hospital')
+
+    res.status(200).json({ drivers });
+    
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}

@@ -19,6 +19,10 @@ const driverSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Patient",
     },
+    hospital:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
     isOnline: {
       type: Boolean,
       default: false,
